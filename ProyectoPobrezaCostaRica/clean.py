@@ -13,11 +13,6 @@ rename_col_dict = {
     'lugar6': 'region_huetar_norte'}
 
 
-def add_new_column(_ds, feature, new_feature):
-    print(feature)
-    _ds = _ds.assign(new_feature=_ds.groupby('idhogar')[feature].transform(lambda x: (x.mean())**2))
-    return _ds
-
 def get_filter_by_row(input, columns):
     filter_data = {}
     for col in columns:
@@ -198,9 +193,8 @@ def clean(ds):
     return ds
 
 def clean_datadrame(ds):
-	return clean(ds)
-	
-'''	
+    return clean(ds)
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("No argument supplied")
@@ -212,4 +206,3 @@ if __name__ == '__main__':
         ds.to_csv(os.path.splitext(filename)[0] + "_out.csv")
     else:
         print("File not exists")
-'''
