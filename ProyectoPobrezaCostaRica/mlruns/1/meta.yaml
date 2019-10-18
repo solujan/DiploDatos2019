@@ -1,0 +1,4 @@
+artifact_location: file:///D:/Diplo/workspace/DiploDatos2019/ProyectoPobrezaCostaRica/mlruns/1
+experiment_id: '1'
+lifecycle_stage: active
+name: PobrezaCostaRica-IntroduccionAprendizajeAutomatica

@@ -1,0 +1,1 @@
+{'algorithm': 'brute', 'leaf_size': 15, 'metric': 'manhattan', 'metric_params': None, 'n_jobs': None, 'n_neighbors': 1, 'p': 1, 'weights': 'uniform'}

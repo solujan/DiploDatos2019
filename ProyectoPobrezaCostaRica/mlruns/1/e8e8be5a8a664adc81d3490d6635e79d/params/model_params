@@ -1,0 +1,1 @@
+{'algorithm': 'auto', 'leaf_size': 15, 'metric': 'manhattan', 'n_neighbors': 1, 'p': 1, 'weights': 'uniform'}
