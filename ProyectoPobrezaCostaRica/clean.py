@@ -1,5 +1,6 @@
 import sys, os
 import pandas as pd
+import numpy as np
 
 rename_col_dict = {
     'area1': 'zona_urbana',
@@ -142,14 +143,34 @@ def get_costo_de_oportunidad(input, ds_paid_rent):
             input["monthly_rent"] = filtered_ds.monthly_rent.mean()
             return input
 
+def get_educacion_jefe(x, _ds):
+    x['edu_jefe'] = (_ds.loc[(_ds['parentesco1']==1) & (_ds['idhogar']==x['idhogar']), 'escolari'].item())**2
+    return x
+        
+def add_synthetic_features(_ds):
+    _ds['tech_individuo'] = (_ds['mobilephone'] + _ds['v18q'])**2
+    _ds['tech_hogar'] = (_ds['television'] + _ds['qmobilephone'] +
+                      _ds['computer'] + _ds['v18q1'])**2
+    _ds['monthly_rent_log'] = np.log(_ds['monthly_rent'])
+    _ds = _ds.apply(lambda x: get_educacion_jefe(x, _ds), axis=1)
+    _ds['bedrooms_to_rooms'] = _ds['bedrooms']/_ds['rooms']
+    _ds['rent_to_rooms'] = _ds['monthly_rent']/_ds['rooms']
+    _ds['SQBage'] = _ds['age'] ** 2
+    _ds['SQBhogar_total'] = (_ds['hogar_nin'] + _ds['hogar_mayor'] +_ds['hogar_adul']) ** 2
+    _ds['child_dependency'] = _ds['hogar_nin'] / (_ds['hogar_nin'] + _ds['hogar_mayor']+_ds['hogar_adul']) 
+    _ds['rooms_per_person'] = (_ds['hogar_nin'] + _ds['hogar_mayor'] +_ds['hogar_adul'])  / (_ds['rooms'])
+    _ds['female_weight'] = ((_ds['r4m1'] + _ds['r4m2'])/_ds['tamhog'])**2
+    _ds['male_weight'] = ((_ds['r4h1'] + _ds['r4h2'])/_ds['tamhog'])**2
+    return _ds
 
+        
 def clean(ds):
     # Step 1.1
     _calc_feat = ds.loc[:, 'SQBescolari':'agesq'].columns
     print('Columnas eliminadas: ', _calc_feat.values)
     ds.drop(columns=_calc_feat, inplace=True)
     ds.drop(columns=["edjefe", "edjefa", "dependency", "meaneduc"], inplace=True)
-
+    print("Columnas eliminadas: edjefe, edjefa, dependency, meaneduc, rez_esc, hhsize, r4t1, r4t2, r4t3,r4m3, r4h3, hogar_total")
     # Step 2.2
     ds.drop(columns=["rez_esc"], inplace=True)
 
@@ -184,6 +205,9 @@ def clean(ds):
     # Step 5
     ds_paid_rent = ds[(ds.monthly_rent > 0) & (ds.parentesco1 == 1)]
     ds = ds.apply(lambda x: get_costo_de_oportunidad(x, ds_paid_rent), axis=1)
+    
+    #step 6 add new feautures
+    add_synthetic_features(ds)
 
     cat = len(ds.select_dtypes(include=['object']).columns)
     num = len(ds.select_dtypes(include=['int64', 'float64']).columns)

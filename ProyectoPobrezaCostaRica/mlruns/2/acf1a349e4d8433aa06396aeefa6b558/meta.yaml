@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Diplo/workspace/DiploDatos2019/ProyectoPobrezaCostaRica/mlruns/2/acf1a349e4d8433aa06396aeefa6b558/artifacts
+end_time: 1571633983009
+entry_point_name: ''
+experiment_id: '2'
+lifecycle_stage: active
+name: ''
+run_id: acf1a349e4d8433aa06396aeefa6b558
+run_uuid: acf1a349e4d8433aa06396aeefa6b558
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1571633955094
+status: 3
+tags: []
+user_id: root
