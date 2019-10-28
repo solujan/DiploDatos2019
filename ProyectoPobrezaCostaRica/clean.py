@@ -320,7 +320,7 @@ def prepare_data(_ds, divide=False):
     df_multicollinearity = drop_multicollinearity(_ds)
     
     
-    minmax = preprocessing.MinMaxScaler()
+    minmax = preprocessing.MinMaxScaler(feature_range=(-0.5,0.5))
     #minmax = preprocessing.Normalizer()
     print("Normalize")
     df_normalized = normalizar(df_multicollinearity, minmax)
