@@ -150,8 +150,11 @@ def get_costo_de_oportunidad(input, ds_paid_rent):
             input["monthly_rent"] = filtered_ds.monthly_rent.mean()
             return input
 
-def get_educacion_jefe(x, _ds):
-    x['edu_jefe'] = (_ds.loc[(_ds['parentesco1']==1) & (_ds['idhogar']==x['idhogar']), 'escolari'].item())**2
+def get_educacion_jefe(x, dataset):
+    try:
+        x['edu_jefe'] = (dataset.loc[(dataset['parentesco1']==1) & (dataset['idhogar']==x['idhogar']), 'escolari'].item())**2
+    except:
+        x['edu_jefe'] = (dataset.loc[(dataset['idhogar']==x['idhogar']), 'escolari'].max())**2
     return x
         
 def add_synthetic_features(_ds):
@@ -175,7 +178,7 @@ def add_synthetic_features(_ds):
     return _ds
 
         
-def clean(ds):
+def clean(ds, train = True):
     # Step 1.1
     _calc_feat = ds.loc[:, 'SQBescolari':'agesq'].columns
     print('Columnas eliminadas: ', _calc_feat.values)
@@ -187,19 +190,23 @@ def clean(ds):
 
     # Step 2.5
     ds.drop(columns=["hhsize", 'r4t1', 'r4t2', 'r4t3', 'r4m3', 'r4h3', "hogar_total"], inplace=True)
-
+    
+    print(ds.shape)
     ds = fix_techo(ds)
+    print(ds.shape)
     ds = fix_electricity(ds)
+    print(ds.shape)
     ds = fix_v18q1(ds)
-
-    hogares = ds[["parentesco1", "idhogar"]].groupby(['idhogar']).sum()
-    array_hogares = hogares[hogares.parentesco1 != 1].index.values
-    ds = ds[ds.idhogar.isin(list(array_hogares)) == False]
-
-    # Step 2.6
-    v2a1_max = ds.v2a1.std() * 3 + ds.v2a1.mean()
-    ds = ds[(ds.v2a1 < v2a1_max) | (ds.v2a1.isnull())]
-
+    
+    if train:
+        hogares = ds[["parentesco1", "idhogar"]].groupby(['idhogar']).sum()
+        array_hogares = hogares[hogares.parentesco1 != 1].index.values
+        ds = ds[ds.idhogar.isin(list(array_hogares)) == False]
+        print(ds.shape)
+        # Step 2.6
+        v2a1_max = ds.v2a1.std() * 3 + ds.v2a1.mean()
+        ds = ds[(ds.v2a1 < v2a1_max) | (ds.v2a1.isnull())]
+    print(ds.shape)
     # Step 3.3
     rename_col_dict = {
         'area1': 'zona_urbana',
@@ -212,19 +219,19 @@ def clean(ds):
         'lugar5': 'region_huetar_atlantica',
         'lugar6': 'region_huetar_norte'}
     ds.rename(columns=rename_col_dict, inplace=True)
-
+    print(ds.shape)
     # Step 5
     ds_paid_rent = ds[(ds.monthly_rent > 0) & (ds.parentesco1 == 1)]
     ds = ds.apply(lambda x: get_costo_de_oportunidad(x, ds_paid_rent), axis=1)
-    
+    print(ds.shape)
     #step 6 add new feautures
     ds = add_synthetic_features(ds)
-
+    print(ds.shape)
     cat = len(ds.select_dtypes(include=['object']).columns)
     num = len(ds.select_dtypes(include=['int64', 'float64']).columns)
     print('Total Features: ', cat, 'objetos', '+',
           num, 'numerical', '=', cat + num, 'features')
-
+    print(ds.shape)
     return ds
 
 def drop_multicollinearity(df, show=False):
