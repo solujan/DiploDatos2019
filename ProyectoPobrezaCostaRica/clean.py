@@ -78,9 +78,9 @@ electricity_variables = [
     {"columns": ["area1", "area2"]},
     {"columns": ["energcocinar1", "energcocinar2", "energcocinar3", "energcocinar4"]},
     {"name": "cielorazo"},
-    {"columns": ["eviv1", "eviv2", "eviv3"]},
-    {"columns": ["etecho1", "etecho2", "etecho3"]},
-    {"columns": ["epared1", "epared2", "epared3"]},
+    {"columns": ["eviv1"]},
+    {"columns": ["etecho1"]},
+    {"columns": ["epared1"]},
 
 ]
 
@@ -123,10 +123,10 @@ costo_oportunidad_check_columns = [
                  "region_huetar_atlantica", "region_huetar_norte"]},
     {"columns": ["zona_urbana", "zona_rural"]},
     {"name": "cielorazo"},
-    {"columns": ["eviv1", "eviv2", "eviv3"]},
+    {"columns": ["eviv1"]},
     {"name": "rooms"},
-    {"columns": ["etecho1", "etecho2", "etecho3"]},
-    {"columns": ["epared1", "epared2", "epared3"]},
+    {"columns": ["etecho1"]},
+    {"columns": ["epared1"]},
     {"columns": ["paredblolad", "paredzocalo", "paredpreb", "pareddes", "paredmad", "paredzinc",
                  "paredfibras", "paredother"]},
     {"columns": ["pisomoscer", "pisocemento", "pisoother", "pisonatur", "pisonotiene",
@@ -180,8 +180,8 @@ def clean(ds):
     _calc_feat = ds.loc[:, 'SQBescolari':'agesq'].columns
     print('Columnas eliminadas: ', _calc_feat.values)
     ds.drop(columns=_calc_feat, inplace=True)
-    ds.drop(columns=["edjefe", "edjefa", "dependency", "meaneduc"], inplace=True)
-    print("Columnas eliminadas: edjefe, edjefa, dependency, meaneduc, rez_esc, hhsize, r4t1, r4t2, r4t3,r4m3, r4h3, hogar_total")
+    ds.drop(columns=["edjefe", "edjefa", "dependency", "meaneduc","elimbasu5", "epared2", "epared3","etecho2", "etecho3","eviv2", "eviv3"], inplace=True)
+    print("Columnas eliminadas: edjefe, edjefa, dependency, meaneduc, rez_esc, hhsize, r4t1, r4t2, r4t3,r4m3, r4h3, hogar_total, elimbasu5")
     # Step 2.2
     ds.drop(columns=["rez_esc"], inplace=True)
 
@@ -238,10 +238,7 @@ def drop_multicollinearity(df, show=False):
                  ['public','planpri','noelec','coopele'],
                   ['sanitario1','sanitario2','sanitario3','sanitario5','sanitario6'],
                   ['energcocinar1','energcocinar2','energcocinar3','energcocinar4'],
-                  ['elimbasu1','elimbasu2','elimbasu3','elimbasu4','elimbasu5','elimbasu6'],
-                  ['epared1','epared2','epared3'],
-                  ['etecho1','etecho2','etecho3'],
-                  ['eviv1','eviv2','eviv3'],
+                  ['elimbasu1','elimbasu2','elimbasu3','elimbasu4','elimbasu6'],
                   ['male','female'],
                   ['estadocivil1','estadocivil2','estadocivil3','estadocivil4','estadocivil5','estadocivil6','estadocivil7'],
                   ['instlevel1','instlevel2','instlevel3','instlevel4','instlevel5','instlevel6','instlevel7','instlevel8','instlevel9'],
@@ -320,7 +317,7 @@ def prepare_data(_ds, divide=False):
     df_multicollinearity = drop_multicollinearity(_ds)
     
     
-    minmax = preprocessing.MinMaxScaler(feature_range=(-0.5,0.5))
+    minmax = preprocessing.MinMaxScaler()
     #minmax = preprocessing.Normalizer()
     print("Normalize")
     df_normalized = normalizar(df_multicollinearity, minmax)
